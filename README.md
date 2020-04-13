@@ -1,11 +1,11 @@
-# statsfl - A simple FPS monitor Flutter
+# statsfl - A simple FPS monitor for Flutter
 
 <img src="https://screens.gskinner.com/shawn/chrome_2020-04-12_22-11-09.png" alt="" />
 
 ## 🔨 Installation
 ```yaml
 dependencies:
-  statsfl: ^0.0.2
+  statsfl: ^0.0.2+2
 ```
 
 ### ⚙ Import

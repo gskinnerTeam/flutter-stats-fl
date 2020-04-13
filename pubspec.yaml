@@ -1,8 +1,8 @@
 name: statsfl
 description: A simple FPS monitor for Flutter
-version: 0.0.2
+version: 0.0.2+2
 author: shawn@gskinner.com
-homepage:
+homepage: https://github.com/gskinnerTeam/flutter-stats-fl
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
