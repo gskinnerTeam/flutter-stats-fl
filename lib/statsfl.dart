@@ -60,6 +60,13 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
     super.initState();
   }
 
+
+  @override
+  void dispose() {
+    _ticker?.dispose();
+    super.dispose();
+  }
+
   void _handleTick(Duration d) {
     // Tick
     _ticks++;
