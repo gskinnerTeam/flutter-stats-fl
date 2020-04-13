@@ -6,20 +6,31 @@ import 'package:flutter/scheduler.dart';
 class StatsFl extends StatefulWidget {
   final bool isEnabled;
   final double width;
+  final double height;
   final Widget child;
   final Alignment align;
   final double totalTime;
   final double sampleTime;
+  final bool showText;
 
-  const StatsFl(
+  StatsFl(
       {Key key,
-        @required this.child,
-        this.width = 300,
-        this.totalTime = 20,
-        this.sampleTime = .5,
-        this.isEnabled = true,
-        this.align})
-      : super(key: key);
+      @required this.child,
+      this.width = 120,
+      this.height = 40,
+      this.totalTime = 15,
+      this.sampleTime = .5,
+      this.isEnabled = true,
+      this.align,
+      this.showText = true})
+      : super(key: key) {
+    assert(width >= 100, "Width must be at least 100px");
+    assert(sampleTime > 0, "Sample time must be > 0.");
+    assert(totalTime >= sampleTime * 2, "Total time must at least twice the sample time.");
+    assert((showText != true || height >= 30), "If showText=true, height must be at least 30px");
+    assert((height >= 8), "Height must be at least 8px");
+    assert(child != null, "Child can't be null.");
+  }
 
   @override
   _StatsFlState createState() => _StatsFlState();
@@ -40,7 +51,6 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
   double get sampleTimeMs => (widget.sampleTime) * 1000;
 
   double get fps => _fps;
-
 
   @override
   void initState() {
@@ -95,21 +105,30 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
       minFps = _entries.reduce((prev, e) => e.fps < prev.fps ? e : prev)?.fps ?? 0;
       maxFps = _entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
     }
-    double width = widget.width;
+    double lastFps = _entries.isNotEmpty? _entries.last.fps : 60;
     return RepaintBoundary(
       child: CustomPaint(
           foregroundPainter: _StatsPainter(state: this),
           child: Container(
-            padding: EdgeInsets.only(left: 4, top: 4),
-            width: width,
-            height: width * .25,
+            padding: EdgeInsets.only(left: 4, top: 2),
+            width: widget.width,
+            height: widget.height,
             color: Colors.black54.withOpacity(.8),
-            child: Text(
-              "${fToString(_fps)} FPS (${fToString(minFps)}-${fToString(maxFps)})",
-              style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold, fontSize: 12),
-            ),
+            child: widget.showText
+                ? Text(
+                    "${fToString(_fps)} FPS (${fToString(minFps)}-${fToString(maxFps)})",
+                    style: TextStyle(color: getColorForFps(lastFps), fontWeight: FontWeight.bold, fontSize: 11),
+                  )
+                : Container(),
           )),
     );
+  }
+
+  Color getColorForFps(double fps) {
+    if (fps < 30) return Colors.redAccent;
+    if (fps < 45) return Colors.orange;
+    if (fps < 60) return Colors.yellow;
+    return Colors.green;
   }
 }
 
@@ -123,9 +142,11 @@ class FpsEntry {
 class _StatsPainter extends CustomPainter {
   final _StatsFlState state;
 
+  double get topPadding => state.widget.showText ? 20 : 4;
+
   _StatsPainter({this.state});
 
-  double getYForFps(double fps, double maxHeight) => maxHeight - 2 - (min((fps / 60), 1) * (maxHeight - 30));
+  double getYForFps(double fps, double maxHeight) => maxHeight - 2 - (min((fps / 60), 1) * (maxHeight - topPadding));
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -133,10 +154,7 @@ class _StatsPainter extends CustomPainter {
     double maxXAxis = state.totalTimeMs;
     double colWidth = size.width / (maxXAxis / state.sampleTimeMs);
     for (var e in state._entries) {
-      Color c = Colors.green;
-      if (e.fps < 60) c = Colors.yellow;
-      if (e.fps < 45) c = Colors.orange;
-      if (e.fps < 30) c = Colors.redAccent;
+      Color c = state.getColorForFps(e.fps);
       double x = size.width - colWidth - ((state.nowMs - e.time) / maxXAxis) * size.width;
       double y = getYForFps(e.fps, size.height);
       canvas.drawRect(Rect.fromLTWH(x, y, colWidth + .5, 2), Paint()..color = c);

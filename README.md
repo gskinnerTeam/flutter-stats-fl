@@ -1,11 +1,11 @@
-# statsfl - A simple FPS monitor for your Flutter Applications.
+# statsfl - A simple FPS monitor Flutter
 
-<img src="https://i.imgur.com/ejWwkTe.png" alt="" />
+<img src="http://screens.gskinner.com/shawn/chrome_2020-04-12_22-11-09.png" alt="" />
 
 ## 🔨 Installation
 ```yaml
 dependencies:
-  statsfl: ^0.0.1
+  statsfl: ^0.0.2
 ```
 
 ### ⚙ Import
@@ -18,7 +18,7 @@ import 'package:statsfl/statsfl.dart';
 
 Just wrap your root view in the StatsFl widget:
 ```dart
-StatsFl(child: MaterialApp());
+StatsFl(child: MyApp());
 ```
 
 There are a few additional options you can play with:
@@ -26,10 +26,12 @@ There are a few additional options you can play with:
 return StatsFl(
         isEnabled: true, //Toggle on/off
         width: 600, //Set size
+        height: 20, //
+        showText: true, // Hide text label
         sampleTime: .5, //Interval between fps calculations, in seconds.
         totalTime: 15, //Total length of timeline, in seconds.
         align: Alignment.topLeft, //Alignment of statsbox
-        child: someChild;
+        child: MyApp());
 ```
 
 ## 🐞 Bugs/Requests
