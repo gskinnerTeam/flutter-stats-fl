@@ -12,6 +12,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     int boxCount = 10;
     List<Widget> boxes = List.generate(boxCount, (index) => ShadowBox()).toList();
+    /// Using 3 StatsFl instances to show different configs,
+    /// you'll probably only want to show one in your app.
     return StatsFl(
       align: Alignment.topRight,
       child: StatsFl(

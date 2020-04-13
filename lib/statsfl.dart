@@ -24,12 +24,12 @@ class StatsFl extends StatefulWidget {
       this.align,
       this.showText = true})
       : super(key: key) {
-    assert(width >= 100, "Width must be at least 100px");
-    assert(sampleTime > 0, "Sample time must be > 0.");
-    assert(totalTime >= sampleTime * 2, "Total time must at least twice the sample time.");
+    assert(width >= 80, "width must be >= 80px");
+    assert(sampleTime > 0, "sampleTime must be > 0.");
+    assert(totalTime >= sampleTime * 2, "totalTime must at least twice sampleTime");
     assert((showText != true || height >= 30), "If showText=true, height must be at least 30px");
-    assert((height >= 8), "Height must be at least 8px");
-    assert(child != null, "Child can't be null.");
+    assert((height >= 8), "height must be >= 8px");
+    assert(child != null, "child can't be null.");
   }
 
   @override
@@ -105,7 +105,7 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
       minFps = _entries.reduce((prev, e) => e.fps < prev.fps ? e : prev)?.fps ?? 0;
       maxFps = _entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
     }
-    double lastFps = _entries.isNotEmpty? _entries.last.fps : 60;
+    double lastFps = _entries.isNotEmpty ? _entries.last.fps : 60;
     return RepaintBoundary(
       child: CustomPaint(
           foregroundPainter: _StatsPainter(state: this),
@@ -158,7 +158,7 @@ class _StatsPainter extends CustomPainter {
       double x = size.width - colWidth - ((state.nowMs - e.time) / maxXAxis) * size.width;
       double y = getYForFps(e.fps, size.height);
       canvas.drawRect(Rect.fromLTWH(x, y, colWidth + .5, 2), Paint()..color = c);
-      canvas.drawRect(Rect.fromLTWH(x, y + 3, colWidth + .5, size.height - y), Paint()..color = c.withOpacity(.2));
+      canvas.drawRect(Rect.fromLTWH(x, y + 3, colWidth + .5, size.height - y - 2), Paint()..color = c.withOpacity(.2));
     }
   }
 
