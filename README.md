@@ -1,6 +1,6 @@
 # statsfl - A simple FPS monitor Flutter
 
-<img src="http://screens.gskinner.com/shawn/chrome_2020-04-12_22-11-09.png" alt="" />
+<img src="https://screens.gskinner.com/shawn/chrome_2020-04-12_22-11-09.png" alt="" />
 
 ## 🔨 Installation
 ```yaml
