@@ -5,7 +5,7 @@
 ## 🔨 Installation
 ```yaml
 dependencies:
-  statsfl: ^0.0.4
+  statsfl: ^1.0.0
 ```
 
 ### ⚙ Import

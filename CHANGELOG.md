@@ -1,4 +1,4 @@
-## [0.0.4]
+## [1.0.0]
 * Add maxFps param
 
 ## [0.0.3+1]
@@ -7,7 +7,7 @@
 ## [0.0.2]
 * Added height
 * Added showText
-* Improved sizing logic
+* Improved sizing   logic
 * Added asserts
 
 ## [0.0.1] - Initial release.
