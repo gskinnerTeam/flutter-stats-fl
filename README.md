@@ -27,6 +27,7 @@ return StatsFl(
         isEnabled: true, //Toggle on/off
         width: 600, //Set size
         height: 20, //
+        maxFps: 90, // 
         showText: true, // Hide text label
         sampleTime: .5, //Interval between fps calculations, in seconds.
         totalTime: 15, //Total length of timeline, in seconds.
