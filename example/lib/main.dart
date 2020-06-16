@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
         height: 20,
         align: Alignment.bottomLeft,
         child: StatsFl(
+          maxFps: 90,
             width: 200,
             height: 30,
             align: Alignment.topLeft,

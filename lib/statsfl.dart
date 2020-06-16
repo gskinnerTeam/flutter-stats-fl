@@ -7,6 +7,7 @@ class StatsFl extends StatefulWidget {
   final bool isEnabled;
   final double width;
   final double height;
+  final int maxFps;
   final Widget child;
   final Alignment align;
   final double totalTime;
@@ -20,6 +21,7 @@ class StatsFl extends StatefulWidget {
       this.height = 40,
       this.totalTime = 15,
       this.sampleTime = .5,
+      this.maxFps = 60,
       this.isEnabled = true,
       this.align,
       this.showText = true})
@@ -41,7 +43,7 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
   int _lastCalcTime;
   Ticker _ticker;
   double _ticks = 0;
-  double _fps = 60;
+  double _fps;
   bool _shouldRepaint = false;
 
   int get nowMs => DateTime.now().millisecondsSinceEpoch;
@@ -54,12 +56,12 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
 
   @override
   void initState() {
+    _fps = widget.maxFps.toDouble();
     _ticker = Ticker(_handleTick);
     _ticker.start();
     _lastCalcTime = nowMs;
     super.initState();
   }
-
 
   @override
   void dispose() {
@@ -75,7 +77,7 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
       _shouldRepaint = true;
       int remainder = (nowMs - _lastCalcTime - sampleTimeMs).round();
       _lastCalcTime = nowMs - remainder;
-      _fps = min((_ticks * 1000 / sampleTimeMs).roundToDouble(), 60);
+      _fps = min((_ticks * 1000 / sampleTimeMs).roundToDouble(), widget.maxFps.toDouble());
       _ticks = 0;
       //Add new entry, remove old ones
       _entries.add(FpsEntry(_lastCalcTime, _fps));
@@ -132,9 +134,9 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
   }
 
   Color getColorForFps(double fps) {
-    if (fps < 30) return Colors.redAccent;
-    if (fps < 45) return Colors.orange;
-    if (fps < 60) return Colors.yellow;
+    if (fps < widget.maxFps * .5) return Colors.redAccent;
+    if (fps < widget.maxFps * .75) return Colors.orange;
+    if (fps < widget.maxFps) return Colors.yellow;
     return Colors.green;
   }
 }

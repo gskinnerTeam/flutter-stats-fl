@@ -1,3 +1,6 @@
+## [0.0.4]
+* Add maxFps param
+
 ## [0.0.3+1]
 * Rendering fix
 
