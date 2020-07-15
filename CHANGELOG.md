@@ -8,7 +8,6 @@
 
 ## [0.1.0]
 * Update to 1.0 and extended description length to satisfy 'health' requirements for pub.dev
->>>>>>> --
 
 ## [0.0.3+1]
 * Rendering fix
