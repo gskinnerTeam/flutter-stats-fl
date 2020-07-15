@@ -6,14 +6,21 @@ import 'package:flutter/scheduler.dart';
 class StatsFl extends StatefulWidget {
   /// Toggle the stats on/off, there should be no performance cost when the widget is off.
   final bool isEnabled;
-  
+  /// Width of widget in px
   final double width;
+  /// Height of widget in px
   final double height;
+  /// Ceiling fps
   final int maxFps;
+  /// A child to be displayed under the Stats
   final Widget child;
+  /// Where to align the stats relative to the child
   final Alignment align;
+  /// How long is the x-axis of the graph, in seconds
   final double totalTime;
+  /// How long is the sample time for the fps avg in second (values of .3 to 1 work pretty well)
   final double sampleTime;
+  /// Show Fps text values
   final bool showText;
 
   StatsFl(
@@ -41,7 +48,7 @@ class StatsFl extends StatefulWidget {
 }
 
 class _StatsFlState extends State<StatsFl> with ChangeNotifier {
-  List<FpsEntry> _entries = [];
+  List<_FpsEntry> _entries = [];
   int _lastCalcTime;
   Ticker _ticker;
   double _ticks = 0;
@@ -72,6 +79,10 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
   }
 
   void _handleTick(Duration d) {
+    if(!widget.isEnabled) {
+      _lastCalcTime = nowMs;
+      return;
+    }
     // Tick
     _ticks++;
     // Calculate
@@ -82,7 +93,7 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
       _fps = min((_ticks * 1000 / sampleTimeMs).roundToDouble(), widget.maxFps.toDouble());
       _ticks = 0;
       //Add new entry, remove old ones
-      _entries.add(FpsEntry(_lastCalcTime, _fps));
+      _entries.add(_FpsEntry(_lastCalcTime, _fps));
       _entries.removeWhere((e) => nowMs - e.time > totalTimeMs);
       notifyListeners();
     }
@@ -98,9 +109,15 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
           IgnorePointer(
             child: Align(
               alignment: widget.align ?? Alignment.topLeft,
-              child: AnimatedBuilder(
-                animation: this,
-                builder: (_, __) => _buildPainter(),
+              child: SizedBox(
+                width: widget.width,
+                height: widget.height,
+                child: RepaintBoundary(
+                  child: AnimatedBuilder(
+                    animation: this,
+                    builder: (_, __) => _buildPainter(),
+                  ),
+                ),
               ),
             ),
           ),
@@ -117,25 +134,21 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
       maxFps = _entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
     }
     double lastFps = _entries.isNotEmpty ? _entries.last.fps : 60;
-    return RepaintBoundary(
-      child: CustomPaint(
-          foregroundPainter: _StatsPainter(state: this),
-          child: Container(
-            padding: EdgeInsets.only(left: 4, top: 2),
-            width: widget.width,
-            height: widget.height,
-            color: Colors.black54.withOpacity(.8),
-            child: widget.showText
-                ? Text(
-                    "${fToString(_fps)} FPS (${fToString(minFps)}-${fToString(maxFps)})",
-                    style: TextStyle(color: getColorForFps(lastFps), fontWeight: FontWeight.bold, fontSize: 11),
-                  )
-                : Container(),
-          )),
-    );
+    return CustomPaint(
+        foregroundPainter: _StatsPainter(state: this),
+        child: Container(
+          padding: EdgeInsets.only(left: 4, top: 2),
+          color: Colors.black54.withOpacity(.8),
+          child: widget.showText
+              ? Text(
+                  "${fToString(_fps)} FPS (${fToString(minFps)}-${fToString(maxFps)})",
+                  style: TextStyle(color: _getColorForFps(lastFps), fontWeight: FontWeight.bold, fontSize: 11),
+                )
+              : Container(),
+        ));
   }
 
-  Color getColorForFps(double fps) {
+  Color _getColorForFps(double fps) {
     if (fps < widget.maxFps * .5) return Colors.redAccent;
     if (fps < widget.maxFps * .75) return Colors.orange;
     if (fps < widget.maxFps) return Colors.yellow;
@@ -143,11 +156,11 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
   }
 }
 
-class FpsEntry {
+class _FpsEntry {
   double fps;
   int time;
 
-  FpsEntry(this.time, this.fps);
+  _FpsEntry(this.time, this.fps);
 }
 
 class _StatsPainter extends CustomPainter {
@@ -165,7 +178,7 @@ class _StatsPainter extends CustomPainter {
     double maxXAxis = state.totalTimeMs;
     double colWidth = size.width / (maxXAxis / state.sampleTimeMs);
     for (var e in state._entries) {
-      Color c = state.getColorForFps(e.fps);
+      Color c = state._getColorForFps(e.fps);
       double x = size.width - colWidth - ((state.nowMs - e.time) / maxXAxis) * size.width;
       double y = getYForFps(e.fps, size.height);
       canvas.drawRect(Rect.fromLTWH(x, y, colWidth + .5, 2), Paint()..color = c);

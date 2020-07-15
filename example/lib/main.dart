@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:statsfl/statsfl.dart';
 
 void main() {
+  //Enable this to measure your repaint regions
+  //debugRepaintRainbowEnabled = true;
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Scaffold(body: MyApp())));
 }
 
@@ -9,7 +12,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int boxCount = 10;
-    List<Widget> boxes = List.generate(boxCount, (index) => ShadowBox()).toList();
+    List<Widget> boxes = List.generate(
+      boxCount,
+      (index) => ShadowBox(animate: index == 2),
+    ).toList();
 
     /// Using 3 StatsFl instances to show different configs,
     /// you'll probably only want to show one in your app.
@@ -32,6 +38,10 @@ class MyApp extends StatelessWidget {
 }
 
 class ShadowBox extends StatelessWidget {
+  final bool animate;
+
+  const ShadowBox({Key key, this.animate = false}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -43,7 +53,7 @@ class ShadowBox extends StatelessWidget {
       child: Container(
           width: double.infinity,
           alignment: Alignment.center,
-          child: SizedBox.fromSize(size: Size(20, 20), child: CircularProgressIndicator())),
+          child: SizedBox.fromSize(size: Size(20, 20), child: animate ? CircularProgressIndicator() : Container())),
     );
   }
 }

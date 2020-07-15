@@ -1,7 +1,11 @@
-<<<<<<< HEAD
+## [1.1.0]
+* Optimize repaint
+* Add docs
+* Privatize API surface
+
 ## [1.0.0+1]
 * Add maxFps param
-=======
+
 ## [0.1.0]
 * Update to 1.0 and extended description length to satisfy 'health' requirements for pub.dev
 >>>>>>> --
