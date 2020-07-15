@@ -1,6 +1,7 @@
 name: statsfl
-description: A simple FPS monitor for Flutter
-version: 1.0.0+1
+
+version: 1.0.0+2
+description: A simple FPS monitor for Flutter. Helps to easily diagnose performance problems in your applications.
 author: shawn@gskinner.com
 homepage: https://github.com/gskinnerTeam/flutter-stats-fl
 

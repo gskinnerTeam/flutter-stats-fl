@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 class StatsFl extends StatefulWidget {
+  /// Toggle the stats on/off, there should be no performance cost when the widget is off.
   final bool isEnabled;
+  
   final double width;
   final double height;
   final int maxFps;
