@@ -5,7 +5,8 @@ import 'package:statsfl/statsfl.dart';
 void main() {
   //Enable this to measure your repaint regions
   //debugRepaintRainbowEnabled = true;
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Scaffold(body: MyApp())));
+  runApp(MaterialApp(
+      debugShowCheckedModeBanner: false, home: Scaffold(body: MyApp())));
 }
 
 class MyApp extends StatelessWidget {
@@ -48,12 +49,17 @@ class ShadowBox extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 20),
       height: 50,
       decoration: BoxDecoration(color: Colors.white, boxShadow: [
-        BoxShadow(spreadRadius: 4, blurRadius: 4, color: Colors.redAccent.withOpacity(.2)),
+        BoxShadow(
+            spreadRadius: 4,
+            blurRadius: 4,
+            color: Colors.redAccent.withOpacity(.2)),
       ]),
       child: Container(
           width: double.infinity,
           alignment: Alignment.center,
-          child: SizedBox.fromSize(size: Size(20, 20), child: animate ? CircularProgressIndicator() : Container())),
+          child: SizedBox.fromSize(
+              size: Size(20, 20),
+              child: animate ? CircularProgressIndicator() : Container())),
     );
   }
 }
