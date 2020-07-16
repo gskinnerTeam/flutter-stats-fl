@@ -6,20 +6,28 @@ import 'package:flutter/scheduler.dart';
 class StatsFl extends StatefulWidget {
   /// Toggle the stats on/off, there should be no performance cost when the widget is off.
   final bool isEnabled;
+
   /// Width of widget in px
   final double width;
+
   /// Height of widget in px
   final double height;
+
   /// Ceiling fps
   final int maxFps;
+
   /// A child to be displayed under the Stats
   final Widget child;
+
   /// Where to align the stats relative to the child
   final Alignment align;
+
   /// How long is the x-axis of the graph, in seconds
   final double totalTime;
+
   /// How long is the sample time for the fps avg in second (values of .3 to 1 work pretty well)
   final double sampleTime;
+
   /// Show Fps text values
   final bool showText;
 
@@ -79,7 +87,7 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
   }
 
   void _handleTick(Duration d) {
-    if(!widget.isEnabled) {
+    if (!widget.isEnabled) {
       _lastCalcTime = nowMs;
       return;
     }
