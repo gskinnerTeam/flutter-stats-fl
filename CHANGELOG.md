@@ -1,4 +1,7 @@
-## [1.1.0+1]
+## [1.1.0+3]
+* Fixed error when StatsFl is not nested in a MaterialApp
+
+## [1.1.0+2]
 * Optimize repaint
 * Add docs
 * Privatize API surface

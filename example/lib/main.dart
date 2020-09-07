@@ -5,8 +5,11 @@ import 'package:statsfl/statsfl.dart';
 void main() {
   //Enable this to measure your repaint regions
   //debugRepaintRainbowEnabled = true;
-  runApp(MaterialApp(
-      debugShowCheckedModeBanner: false, home: Scaffold(body: MyApp())));
+  runApp(StatsFl(
+    align: Alignment.topRight,
+    child: MaterialApp(
+        debugShowCheckedModeBanner: false, home: Scaffold(body: MyApp())),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -21,19 +24,16 @@ class MyApp extends StatelessWidget {
     /// Using 3 StatsFl instances to show different configs,
     /// you'll probably only want to show one in your app.
     return StatsFl(
-      align: Alignment.topRight,
+      width: double.infinity,
+      showText: false,
+      height: 20,
+      align: Alignment.bottomLeft,
       child: StatsFl(
-        width: double.infinity,
-        showText: false,
-        height: 20,
-        align: Alignment.bottomLeft,
-        child: StatsFl(
-            maxFps: 90,
-            width: 200,
-            height: 30,
-            align: Alignment.topLeft,
-            child: Center(child: ListView(children: boxes))),
-      ),
+          maxFps: 90,
+          width: 200,
+          height: 30,
+          align: Alignment.topLeft,
+          child: Center(child: ListView(children: boxes))),
     );
   }
 }
