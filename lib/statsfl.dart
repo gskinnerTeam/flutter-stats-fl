@@ -190,8 +190,7 @@ class _StatsPainter extends CustomPainter {
 
   _StatsPainter({this.state});
 
-  double getYForFps(double fps, double maxHeight) =>
-      maxHeight - 2 - (min((fps / 60), 1) * (maxHeight - topPadding));
+  double getYForFps(double fps, double maxHeight) => maxHeight - 2 - (min((fps / 60), 1) * (maxHeight - topPadding));
 
   @override
   void paint(Canvas canvas, Size size) {
