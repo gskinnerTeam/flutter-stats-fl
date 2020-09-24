@@ -55,7 +55,7 @@ class StatsFl extends StatefulWidget {
   _StatsFlState createState() => _StatsFlState();
 }
 
-class _StatsFlState extends State<StatsFl> with ChangeNotifier {
+class _StatsFlState extends State<StatsFl> with SingleTickerProviderStateMixin {
   List<_FpsEntry> _entries = [];
   int _lastCalcTime;
   Ticker _ticker;
@@ -71,18 +71,22 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
 
   double get fps => _fps;
 
+  AnimationController _controller;
+
   @override
   void initState() {
     _fps = widget.maxFps.toDouble();
     _ticker = Ticker(_handleTick);
     _ticker.start();
     _lastCalcTime = nowMs;
+    _controller = AnimationController(vsync: this);
     super.initState();
   }
 
   @override
   void dispose() {
     _ticker?.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -95,42 +99,47 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
     _ticks++;
     // Calculate
     if (nowMs - _lastCalcTime > sampleTimeMs) {
-      _shouldRepaint = true;
       int remainder = (nowMs - _lastCalcTime - sampleTimeMs).round();
       _lastCalcTime = nowMs - remainder;
       _fps = min((_ticks * 1000 / sampleTimeMs).roundToDouble(), widget.maxFps.toDouble());
-      _ticks = 0;
+
       //Add new entry, remove old ones
-      _entries.add(_FpsEntry(_lastCalcTime, _fps));
-      _entries.removeWhere((e) => nowMs - e.time > totalTimeMs);
-      notifyListeners();
+
+      setState(() {
+        _shouldRepaint = true;
+        _ticks = 0;
+        _entries.add(_FpsEntry(_lastCalcTime, _fps));
+        _entries.removeWhere((e) => nowMs - e.time > totalTimeMs);
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!(widget.isEnabled ?? true)) return widget.child;
     return Material(
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: Stack(
           children: <Widget>[
             widget.child,
-            IgnorePointer(
-              child: Align(
-                alignment: widget.align ?? Alignment.topLeft,
-                child: SizedBox(
-                  width: widget.width,
-                  height: widget.height,
-                  child: RepaintBoundary(
-                    child: AnimatedBuilder(
-                      animation: this,
-                      builder: (_, __) => _buildPainter(),
+            if (widget.isEnabled)
+              IgnorePointer(
+                child: Align(
+                  alignment: widget.align ?? Alignment.topLeft,
+                  child: SizedBox(
+                    width: widget.width,
+                    height: widget.height,
+                    child: RepaintBoundary(
+                      child: AnimatedBuilder(
+                        animation: _controller,
+                        builder: (_, __) => _buildPainter(),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
+              )
+            else
+              Container()
           ],
         ),
       ),
@@ -141,8 +150,10 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
     String fToString(double value) => value.toStringAsPrecision(2);
     double minFps = 0, maxFps = 0;
     if (_entries.isNotEmpty) {
-      minFps = _entries.reduce((prev, e) => e.fps < prev.fps ? e : prev)?.fps ?? 0;
-      maxFps = _entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
+      minFps =
+          _entries.reduce((prev, e) => e.fps < prev.fps ? e : prev)?.fps ?? 0;
+      maxFps =
+          _entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
     }
     double lastFps = _entries.isNotEmpty ? _entries.last.fps : 60;
     return CustomPaint(
@@ -153,7 +164,10 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
           child: widget.showText
               ? Text(
                   "${fToString(_fps)} FPS (${fToString(minFps)}-${fToString(maxFps)})",
-                  style: TextStyle(color: _getColorForFps(lastFps), fontWeight: FontWeight.bold, fontSize: 11),
+                  style: TextStyle(
+                      color: _getColorForFps(lastFps),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11),
                 )
               : Container(),
         ));
@@ -181,7 +195,8 @@ class _StatsPainter extends CustomPainter {
 
   _StatsPainter({this.state});
 
-  double getYForFps(double fps, double maxHeight) => maxHeight - 2 - (min((fps / 60), 1) * (maxHeight - topPadding));
+  double getYForFps(double fps, double maxHeight) =>
+      maxHeight - 2 - (min((fps / 60), 1) * (maxHeight - topPadding));
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -190,10 +205,15 @@ class _StatsPainter extends CustomPainter {
     double colWidth = size.width / (maxXAxis / state.sampleTimeMs);
     for (var e in state._entries) {
       Color c = state._getColorForFps(e.fps);
-      double x = size.width - colWidth - ((state.nowMs - e.time) / maxXAxis) * size.width;
+      double x = size.width -
+          colWidth -
+          ((state.nowMs - e.time) / maxXAxis) * size.width;
       double y = getYForFps(e.fps, size.height);
-      canvas.drawRect(Rect.fromLTWH(x, y, colWidth + .5, 2), Paint()..color = c);
-      canvas.drawRect(Rect.fromLTWH(x, y + 3, colWidth + .5, size.height - y - 2), Paint()..color = c.withOpacity(.2));
+      canvas.drawRect(
+          Rect.fromLTWH(x, y, colWidth + .5, 2), Paint()..color = c);
+      canvas.drawRect(
+          Rect.fromLTWH(x, y + 3, colWidth + .5, size.height - y - 2),
+          Paint()..color = c.withOpacity(.2));
     }
   }
 
