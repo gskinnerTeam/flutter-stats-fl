@@ -55,8 +55,8 @@ class StatsFl extends StatefulWidget {
   _StatsFlState createState() => _StatsFlState();
 }
 
-class _StatsFlState extends State<StatsFl> with ChangeNotifier {
-  List<_FpsEntry> _entries = [];
+class _StatsFlState extends State<StatsFl> {
+  ValueNotifier<List<_FpsEntry>> _entries = ValueNotifier([]);
   int _lastCalcTime;
   Ticker _ticker;
   double _ticks = 0;
@@ -86,7 +86,7 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
     super.dispose();
   }
 
-  void _handleTick(Duration d) {
+    void _handleTick(Duration d) {
     if (!widget.isEnabled) {
       _lastCalcTime = nowMs;
       return;
@@ -101,50 +101,52 @@ class _StatsFlState extends State<StatsFl> with ChangeNotifier {
       _fps = min((_ticks * 1000 / sampleTimeMs).roundToDouble(), widget.maxFps.toDouble());
       _ticks = 0;
       //Add new entry, remove old ones
-      _entries.add(_FpsEntry(_lastCalcTime, _fps));
-      _entries.removeWhere((e) => nowMs - e.time > totalTimeMs);
-      notifyListeners();
+
+      _entries.value.add(_FpsEntry(_lastCalcTime, _fps));
+      _entries.value = List.from(_entries.value)..removeWhere((e) => nowMs - e.time > totalTimeMs);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!(widget.isEnabled ?? true)) return widget.child;
     return Material(
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: Stack(
           children: <Widget>[
             widget.child,
-            IgnorePointer(
-              child: Align(
-                alignment: widget.align ?? Alignment.topLeft,
-                child: SizedBox(
-                  width: widget.width,
-                  height: widget.height,
-                  child: RepaintBoundary(
-                    child: AnimatedBuilder(
-                      animation: this,
-                      builder: (_, __) => _buildPainter(),
+            if (widget.isEnabled)
+              IgnorePointer(
+                child: Align(
+                  alignment: widget.align ?? Alignment.topLeft,
+                  child: SizedBox(
+                    width: widget.width,
+                    height: widget.height,
+                    child: RepaintBoundary(
+                      child: ValueListenableBuilder<List<_FpsEntry>>(
+                        valueListenable: _entries,
+                        builder: (_, entries, ___) => _buildPainter(entries),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
+              )
+            else
+              Container()
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPainter() {
+  Widget _buildPainter(List<_FpsEntry> entries) {
     String fToString(double value) => value.toStringAsPrecision(2);
     double minFps = 0, maxFps = 0;
-    if (_entries.isNotEmpty) {
-      minFps = _entries.reduce((prev, e) => e.fps < prev.fps ? e : prev)?.fps ?? 0;
-      maxFps = _entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
+    if (entries.isNotEmpty) {
+      minFps = entries.reduce((prev, e) => e.fps < prev.fps ? e : prev)?.fps ?? 0;
+      maxFps = entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
     }
-    double lastFps = _entries.isNotEmpty ? _entries.last.fps : 60;
+    double lastFps = entries.isNotEmpty ? entries.last.fps : 60;
     return CustomPaint(
         foregroundPainter: _StatsPainter(state: this),
         child: Container(
@@ -188,7 +190,7 @@ class _StatsPainter extends CustomPainter {
     state._shouldRepaint = false;
     double maxXAxis = state.totalTimeMs;
     double colWidth = size.width / (maxXAxis / state.sampleTimeMs);
-    for (var e in state._entries) {
+    for (var e in state._entries.value) {
       Color c = state._getColorForFps(e.fps);
       double x = size.width - colWidth - ((state.nowMs - e.time) / maxXAxis) * size.width;
       double y = getYForFps(e.fps, size.height);
