@@ -150,10 +150,8 @@ class _StatsFlState extends State<StatsFl> with SingleTickerProviderStateMixin {
     String fToString(double value) => value.toStringAsPrecision(2);
     double minFps = 0, maxFps = 0;
     if (_entries.isNotEmpty) {
-      minFps =
-          _entries.reduce((prev, e) => e.fps < prev.fps ? e : prev)?.fps ?? 0;
-      maxFps =
-          _entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
+      minFps = _entries.reduce((prev, e) => e.fps < prev.fps ? e : prev)?.fps ?? 0;
+      maxFps = _entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
     }
     double lastFps = _entries.isNotEmpty ? _entries.last.fps : 60;
     return CustomPaint(
@@ -164,10 +162,7 @@ class _StatsFlState extends State<StatsFl> with SingleTickerProviderStateMixin {
           child: widget.showText
               ? Text(
                   "${fToString(_fps)} FPS (${fToString(minFps)}-${fToString(maxFps)})",
-                  style: TextStyle(
-                      color: _getColorForFps(lastFps),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 11),
+                  style: TextStyle(color: _getColorForFps(lastFps), fontWeight: FontWeight.bold, fontSize: 11),
                 )
               : Container(),
         ));
@@ -205,15 +200,10 @@ class _StatsPainter extends CustomPainter {
     double colWidth = size.width / (maxXAxis / state.sampleTimeMs);
     for (var e in state._entries) {
       Color c = state._getColorForFps(e.fps);
-      double x = size.width -
-          colWidth -
-          ((state.nowMs - e.time) / maxXAxis) * size.width;
+      double x = size.width - colWidth - ((state.nowMs - e.time) / maxXAxis) * size.width;
       double y = getYForFps(e.fps, size.height);
-      canvas.drawRect(
-          Rect.fromLTWH(x, y, colWidth + .5, 2), Paint()..color = c);
-      canvas.drawRect(
-          Rect.fromLTWH(x, y + 3, colWidth + .5, size.height - y - 2),
-          Paint()..color = c.withOpacity(.2));
+      canvas.drawRect(Rect.fromLTWH(x, y, colWidth + .5, 2), Paint()..color = c);
+      canvas.drawRect(Rect.fromLTWH(x, y + 3, colWidth + .5, size.height - y - 2), Paint()..color = c.withOpacity(.2));
     }
   }
 
