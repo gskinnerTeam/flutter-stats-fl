@@ -55,8 +55,8 @@ class StatsFl extends StatefulWidget {
   _StatsFlState createState() => _StatsFlState();
 }
 
-class _StatsFlState extends State<StatsFl> with SingleTickerProviderStateMixin {
-  List<_FpsEntry> _entries = [];
+class _StatsFlState extends State<StatsFl> {
+  ValueNotifier<List<_FpsEntry>> _entries = ValueNotifier([]);
   int _lastCalcTime;
   Ticker _ticker;
   double _ticks = 0;
@@ -71,26 +71,22 @@ class _StatsFlState extends State<StatsFl> with SingleTickerProviderStateMixin {
 
   double get fps => _fps;
 
-  AnimationController _controller;
-
   @override
   void initState() {
     _fps = widget.maxFps.toDouble();
     _ticker = Ticker(_handleTick);
     _ticker.start();
     _lastCalcTime = nowMs;
-    _controller = AnimationController(vsync: this);
     super.initState();
   }
 
   @override
   void dispose() {
     _ticker?.dispose();
-    _controller?.dispose();
     super.dispose();
   }
 
-  void _handleTick(Duration d) {
+    void _handleTick(Duration d) {
     if (!widget.isEnabled) {
       _lastCalcTime = nowMs;
       return;
@@ -99,18 +95,15 @@ class _StatsFlState extends State<StatsFl> with SingleTickerProviderStateMixin {
     _ticks++;
     // Calculate
     if (nowMs - _lastCalcTime > sampleTimeMs) {
+      _shouldRepaint = true;
       int remainder = (nowMs - _lastCalcTime - sampleTimeMs).round();
       _lastCalcTime = nowMs - remainder;
       _fps = min((_ticks * 1000 / sampleTimeMs).roundToDouble(), widget.maxFps.toDouble());
-
+      _ticks = 0;
       //Add new entry, remove old ones
 
-      setState(() {
-        _shouldRepaint = true;
-        _ticks = 0;
-        _entries.add(_FpsEntry(_lastCalcTime, _fps));
-        _entries.removeWhere((e) => nowMs - e.time > totalTimeMs);
-      });
+      _entries.value.add(_FpsEntry(_lastCalcTime, _fps));
+      _entries.value = List.from(_entries.value)..removeWhere((e) => nowMs - e.time > totalTimeMs);
     }
   }
 
@@ -130,9 +123,9 @@ class _StatsFlState extends State<StatsFl> with SingleTickerProviderStateMixin {
                     width: widget.width,
                     height: widget.height,
                     child: RepaintBoundary(
-                      child: AnimatedBuilder(
-                        animation: _controller,
-                        builder: (_, __) => _buildPainter(),
+                      child: ValueListenableBuilder<List<_FpsEntry>>(
+                        valueListenable: _entries,
+                        builder: (_, entries, ___) => _buildPainter(entries),
                       ),
                     ),
                   ),
@@ -146,14 +139,14 @@ class _StatsFlState extends State<StatsFl> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildPainter() {
+  Widget _buildPainter(List<_FpsEntry> entries) {
     String fToString(double value) => value.toStringAsPrecision(2);
     double minFps = 0, maxFps = 0;
-    if (_entries.isNotEmpty) {
-      minFps = _entries.reduce((prev, e) => e.fps < prev.fps ? e : prev)?.fps ?? 0;
-      maxFps = _entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
+    if (entries.isNotEmpty) {
+      minFps = entries.reduce((prev, e) => e.fps < prev.fps ? e : prev)?.fps ?? 0;
+      maxFps = entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
     }
-    double lastFps = _entries.isNotEmpty ? _entries.last.fps : 60;
+    double lastFps = entries.isNotEmpty ? entries.last.fps : 60;
     return CustomPaint(
         foregroundPainter: _StatsPainter(state: this),
         child: Container(
@@ -197,7 +190,7 @@ class _StatsPainter extends CustomPainter {
     state._shouldRepaint = false;
     double maxXAxis = state.totalTimeMs;
     double colWidth = size.width / (maxXAxis / state.sampleTimeMs);
-    for (var e in state._entries) {
+    for (var e in state._entries.value) {
       Color c = state._getColorForFps(e.fps);
       double x = size.width - colWidth - ((state.nowMs - e.time) / maxXAxis) * size.width;
       double y = getYForFps(e.fps, size.height);
