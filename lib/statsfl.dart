@@ -81,10 +81,10 @@ class _StatsFlState extends State<StatsFl> {
 
   @override
   void didUpdateWidget(StatsFl oldWidget) {
-    final currentEnabledStatus = widget.isEnabled;
+    final isEnabled = widget.isEnabled;
 
-    if (oldWidget.isEnabled != currentEnabledStatus) {
-      currentEnabledStatus ? _ticker.start() : _ticker.stop();
+    if (oldWidget.isEnabled != isEnabled) {
+      isEnabled ? _ticker.start() : _ticker.stop();
     }
 
     super.didUpdateWidget(oldWidget);
