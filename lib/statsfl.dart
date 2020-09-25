@@ -75,9 +75,18 @@ class _StatsFlState extends State<StatsFl> {
   void initState() {
     _fps = widget.maxFps.toDouble();
     _ticker = Ticker(_handleTick);
-    _ticker.start();
     _lastCalcTime = nowMs;
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(StatsFl oldWidget) {
+    if (widget.isEnabled) {
+      _ticker.start();
+    } else {
+      _ticker.stop();
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
