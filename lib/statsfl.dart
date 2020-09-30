@@ -96,7 +96,7 @@ class _StatsFlState extends State<StatsFl> {
     super.dispose();
   }
 
-    void _handleTick(Duration d) {
+  void _handleTick(Duration d) {
     if (!widget.isEnabled) {
       _lastCalcTime = nowMs;
       return;
@@ -111,7 +111,6 @@ class _StatsFlState extends State<StatsFl> {
       _fps = min((_ticks * 1000 / sampleTimeMs).roundToDouble(), widget.maxFps.toDouble());
       _ticks = 0;
       //Add new entry, remove old ones
-
       _entries.value.add(_FpsEntry(_lastCalcTime, _fps));
       _entries.value = List.from(_entries.value)..removeWhere((e) => nowMs - e.time > totalTimeMs);
     }
