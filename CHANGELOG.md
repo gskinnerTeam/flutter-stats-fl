@@ -1,3 +1,10 @@
+## [1.2.0]
+* Fixed error when StatsFl is not nested in a MaterialApp
+* Fix bug when wrapping MaterialApp
+* Switch to ValueNotifier
+* Handle didChangeDependancies for isEnabled
+* Cleanup
+
 ## [1.1.0+3]
 * Fixed error when StatsFl is not nested in a MaterialApp
 
