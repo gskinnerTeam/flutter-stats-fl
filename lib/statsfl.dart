@@ -139,9 +139,7 @@ class _StatsFlState extends State<StatsFl> {
                     ),
                   ),
                 ),
-              )
-            else
-              Container()
+              ),
           ],
         ),
       ),
