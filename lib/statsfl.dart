@@ -58,10 +58,10 @@ class StatsFl extends StatefulWidget {
 
 class _StatsFlState extends State<StatsFl> {
   ValueNotifier<List<_FpsEntry>> _entries = ValueNotifier([]);
-  int _lastCalcTime;
-  Ticker _ticker;
+  int _lastCalcTime = 0;
+  Ticker/*!*/ _ticker;
   double _ticks = 0;
-  double _fps;
+  double _fps = 0;
   bool _shouldRepaint = false;
 
   int get nowMs => DateTime.now().millisecondsSinceEpoch;
@@ -178,8 +178,8 @@ class _StatsFlState extends State<StatsFl> {
 }
 
 class _FpsEntry {
-  double fps;
-  int time;
+  final double /*!*/ fps;
+  final int time;
 
   _FpsEntry(this.time, this.fps);
 }
@@ -189,7 +189,7 @@ class _StatsPainter extends CustomPainter {
 
   double get topPadding => state.widget.showText ? 20 : 4;
 
-  _StatsPainter({this.state});
+  _StatsPainter({/*required*/ @required this.state});
 
   double getYForFps(double fps, double maxHeight) => maxHeight - 2 - (min((fps / 60), 1) * (maxHeight - topPadding));
 

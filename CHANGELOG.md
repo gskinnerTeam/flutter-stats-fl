@@ -1,3 +1,6 @@
+## [1.3.0]
+* Fixed missing dispose call
+
 ## [1.2.0]
 * Fixed error when StatsFl is not nested in a MaterialApp
 * Fix bug when wrapping MaterialApp
