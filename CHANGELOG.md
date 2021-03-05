@@ -1,3 +1,6 @@
+## [2.0.0-nullsafety]
+* Stable, null-safe release.
+
 ## [1.3.0]
 * Fixed missing dispose call
 

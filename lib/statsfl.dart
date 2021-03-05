@@ -20,7 +20,7 @@ class StatsFl extends StatefulWidget {
   final Widget child;
 
   /// Where to align the stats relative to the child
-  final Alignment align;
+  final Alignment? align;
 
   /// How long is the x-axis of the graph, in seconds
   final double totalTime;
@@ -32,8 +32,8 @@ class StatsFl extends StatefulWidget {
   final bool showText;
 
   StatsFl(
-      {Key key,
-      @required this.child,
+      {Key? key,
+      required this.child,
       this.width = 120,
       this.height = 40,
       this.totalTime = 15,
@@ -48,8 +48,6 @@ class StatsFl extends StatefulWidget {
     assert(totalTime >= sampleTime * 2, "totalTime must at least twice sampleTime");
     assert((showText != true || height >= 30), "If showText=true, height must be at least 30px");
     assert((height >= 8), "height must be >= 8px");
-    assert(child != null, "child can't be null.");
-    assert(isEnabled != null, "isEnabled can't be null.");
   }
 
   @override
@@ -59,7 +57,7 @@ class StatsFl extends StatefulWidget {
 class _StatsFlState extends State<StatsFl> {
   ValueNotifier<List<_FpsEntry>> _entries = ValueNotifier([]);
   int _lastCalcTime = 0;
-  Ticker/*!*/ _ticker;
+  late Ticker _ticker;
   double _ticks = 0;
   double _fps = 0;
   bool _shouldRepaint = false;
@@ -93,7 +91,7 @@ class _StatsFlState extends State<StatsFl> {
 
   @override
   void dispose() {
-    _ticker?.dispose();
+    _ticker.dispose();
     super.dispose();
   }
 
@@ -151,8 +149,8 @@ class _StatsFlState extends State<StatsFl> {
     String fToString(double value) => value.toStringAsPrecision(2);
     double minFps = 0, maxFps = 0;
     if (entries.isNotEmpty) {
-      minFps = entries.reduce((prev, e) => e.fps < prev.fps ? e : prev)?.fps ?? 0;
-      maxFps = entries.reduce((prev, e) => e.fps > prev.fps ? e : prev)?.fps ?? 0;
+      minFps = entries.reduce((prev, e) => e.fps < prev.fps ? e : prev).fps;
+      maxFps = entries.reduce((prev, e) => e.fps > prev.fps ? e : prev).fps;
     }
     double lastFps = entries.isNotEmpty ? entries.last.fps : 60;
     return CustomPaint(
@@ -178,7 +176,7 @@ class _StatsFlState extends State<StatsFl> {
 }
 
 class _FpsEntry {
-  final double /*!*/ fps;
+  final double fps;
   final int time;
 
   _FpsEntry(this.time, this.fps);
@@ -189,7 +187,7 @@ class _StatsPainter extends CustomPainter {
 
   double get topPadding => state.widget.showText ? 20 : 4;
 
-  _StatsPainter({/*required*/ @required this.state});
+  _StatsPainter({required this.state});
 
   double getYForFps(double fps, double maxHeight) => maxHeight - 2 - (min((fps / 60), 1) * (maxHeight - topPadding));
 
