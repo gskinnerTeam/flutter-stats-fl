@@ -1,3 +1,6 @@
+## [2.0.1-nullsafety]
+* Fixed initialization bug
+
 ## [2.0.0-nullsafety]
 * Stable, null-safe release.
 

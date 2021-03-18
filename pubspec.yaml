@@ -1,6 +1,6 @@
 name: statsfl
 
-version: 2.0.0-nullsafety
+version: 2.0.1-nullsafety
 description: A simple FPS monitor for Flutter. Helps to easily diagnose performance problems in your applications.
 homepage: https://github.com/gskinnerTeam/flutter-stats-fl
 
