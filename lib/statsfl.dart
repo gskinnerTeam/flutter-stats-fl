@@ -147,7 +147,7 @@ class _StatsFlState extends State<StatsFl> {
   }
 
   Widget _buildPainter(List<_FpsEntry> entries) {
-    String fToString(double value) => value.toStringAsPrecision(2);
+    String fToString(double value) => value.toStringAsPrecision(3);
     double minFps = 0, maxFps = 0;
     if (entries.isNotEmpty) {
       minFps = entries.reduce((prev, e) => e.fps < prev.fps ? e : prev).fps;
