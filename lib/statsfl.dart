@@ -17,7 +17,7 @@ class StatsFl extends StatefulWidget {
   final int maxFps;
 
   /// A child to be displayed under the Stats
-  final Widget child;
+  final Widget? child;
 
   /// Where to align the stats relative to the child
   final Alignment? align;
@@ -33,7 +33,7 @@ class StatsFl extends StatefulWidget {
 
   StatsFl(
       {Key? key,
-      required this.child,
+      this.child,
       this.width = 120,
       this.height = 40,
       this.totalTime = 15,
@@ -118,29 +118,37 @@ class _StatsFlState extends State<StatsFl> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    Widget buildStats() => IgnorePointer(
+          child: SizedBox(
+            width: widget.width,
+            height: widget.height,
+            child: RepaintBoundary(
+              child: ValueListenableBuilder<List<_FpsEntry>>(
+                valueListenable: _entries,
+                builder: (_, entries, ___) => _buildPainter(entries),
+              ),
+            ),
+          ),
+        );
+
+    return IgnorePointer(
       child: Directionality(
         textDirection: TextDirection.ltr,
-        child: Stack(
-          children: <Widget>[
-            widget.child,
-            if (widget.isEnabled)
-              IgnorePointer(
-                child: Align(
-                  alignment: widget.align ?? Alignment.topLeft,
-                  child: SizedBox(
-                    width: widget.width,
-                    height: widget.height,
-                    child: RepaintBoundary(
-                      child: ValueListenableBuilder<List<_FpsEntry>>(
-                        valueListenable: _entries,
-                        builder: (_, entries, ___) => _buildPainter(entries),
+        child: Material(
+          color: Colors.transparent,
+          child: widget.child == null
+              ? buildStats()
+              : Stack(
+                  children: [
+                    widget.child!,
+                    Positioned.fill(
+                      child: Align(
+                        alignment: widget.align ?? Alignment.topLeft,
+                        child: buildStats(),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ),
-          ],
         ),
       ),
     );

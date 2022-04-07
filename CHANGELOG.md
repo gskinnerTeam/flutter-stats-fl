@@ -1,4 +1,8 @@
-## [2.0.1-nullsafety]
+## [2.1.0]
+* Set Material color to Transparent to allow Stats to sit on top of content in a stack
+* Child is now optional
+
+## [2.0.1]
 * Fixed initialization bug
 
 ## [2.0.0-nullsafety]

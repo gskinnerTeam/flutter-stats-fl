@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:statsfl/statsfl.dart';
 
 void main() {
   //Enable this to measure your repaint regions
   //debugRepaintRainbowEnabled = true;
-  runApp(StatsFl(
-    align: Alignment.topRight,
-    child: MaterialApp(debugShowCheckedModeBanner: false, home: Scaffold(body: MyApp())),
+  runApp(Padding(
+    padding: const EdgeInsets.only(top: 40),
+    child: StatsFl(
+      align: Alignment.topRight,
+      child: MaterialApp(debugShowCheckedModeBanner: false, home: Scaffold(body: MyApp())),
+    ),
   ));
 }
 
@@ -20,19 +22,19 @@ class MyApp extends StatelessWidget {
       (index) => ShadowBox(animate: index == 2),
     ).toList();
 
-    /// Using 3 StatsFl instances to show different configs,
-    /// you'll probably only want to show one in your app.
-    return StatsFl(
-      width: double.infinity,
-      showText: false,
-      height: 20,
-      align: Alignment.bottomLeft,
-      child: StatsFl(
-          maxFps: 90,
-          width: 200,
-          height: 30,
-          align: Alignment.topLeft,
-          child: Center(child: ListView(children: boxes))),
+    return Stack(
+      children: [
+        /// Test 2nd level of nesting
+        StatsFl(
+            maxFps: 90,
+            width: 200,
+            height: 30,
+            align: Alignment.topLeft,
+            child: Center(child: ListView(children: boxes))),
+
+        /// Test floating version with no child
+        Positioned.fill(child: Center(child: StatsFl())),
+      ],
     );
   }
 }
