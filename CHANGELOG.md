@@ -1,3 +1,7 @@
+## [2.2.0]
+* Fix issues with isEnabled
+* Move ignorePointer around the stats widget only
+
 ## [2.1.0]
 * Set Material color to Transparent to allow Stats to sit on top of content in a stack
 * Child is now optional

@@ -131,25 +131,27 @@ class _StatsFlState extends State<StatsFl> {
           ),
         );
 
-    return IgnorePointer(
-      child: Directionality(
-        textDirection: TextDirection.ltr,
-        child: Material(
-          color: Colors.transparent,
-          child: widget.child == null
-              ? buildStats()
-              : Stack(
-                  children: [
-                    widget.child!,
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Material(
+        color: Colors.transparent,
+        child: widget.child == null
+            ? buildStats()
+            : Stack(
+                children: [
+                  widget.child!,
+                  if (widget.isEnabled) ...[
                     Positioned.fill(
-                      child: Align(
-                        alignment: widget.align ?? Alignment.topLeft,
-                        child: buildStats(),
+                      child: IgnorePointer(
+                        child: Align(
+                          alignment: widget.align ?? Alignment.topLeft,
+                          child: buildStats(),
+                        ),
                       ),
-                    ),
+                    )
                   ],
-                ),
-        ),
+                ],
+              ),
       ),
     );
   }

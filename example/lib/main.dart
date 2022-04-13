@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
       children: [
         /// Test 2nd level of nesting
         StatsFl(
+            isEnabled: false,
             maxFps: 90,
             width: 200,
             height: 30,
