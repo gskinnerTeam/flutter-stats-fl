@@ -1,6 +1,7 @@
-## [2.2.0]
+## [2.2.0+1]
 * Fix issues with isEnabled
-* Move ignorePointer around the stats widget only
+* Remove extra ignorePointer
+* Change min-height to 20px
 
 ## [2.1.0]
 * Set Material color to Transparent to allow Stats to sit on top of content in a stack

@@ -7,7 +7,9 @@ void main() {
   runApp(Padding(
     padding: const EdgeInsets.only(top: 40),
     child: StatsFl(
+      isEnabled: true,
       align: Alignment.topRight,
+      height: 20,
       child: MaterialApp(debugShowCheckedModeBanner: false, home: Scaffold(body: MyApp())),
     ),
   ));
@@ -19,31 +21,31 @@ class MyApp extends StatelessWidget {
     int boxCount = 10;
     List<Widget> boxes = List.generate(
       boxCount,
-      (index) => ShadowBox(animate: index == 2),
+      (index) => ShadowBox(),
     ).toList();
 
     return Stack(
       children: [
         /// Test 2nd level of nesting
         StatsFl(
-            isEnabled: false,
+            isEnabled: true,
             maxFps: 90,
             width: 200,
             height: 30,
             align: Alignment.topLeft,
             child: Center(child: ListView(children: boxes))),
 
+        Center(child: IconButton(onPressed: () {}, icon: Icon(Icons.height))),
+
         /// Test floating version with no child
-        Positioned.fill(child: Center(child: StatsFl())),
+        Positioned.fill(child: Align(alignment: Alignment.bottomCenter, child: StatsFl())),
       ],
     );
   }
 }
 
 class ShadowBox extends StatelessWidget {
-  final bool animate;
-
-  const ShadowBox({Key? key, this.animate = false}) : super(key: key);
+  const ShadowBox({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +56,10 @@ class ShadowBox extends StatelessWidget {
         BoxShadow(spreadRadius: 4, blurRadius: 4, color: Colors.redAccent.withOpacity(.2)),
       ]),
       child: Container(
-          width: double.infinity,
-          alignment: Alignment.center,
-          child: SizedBox.fromSize(size: Size(20, 20), child: animate ? CircularProgressIndicator() : Container())),
+        width: double.infinity,
+        alignment: Alignment.center,
+        child: SizedBox.fromSize(size: Size(20, 20), child: CircularProgressIndicator()),
+      ),
     );
   }
 }
