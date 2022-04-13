@@ -134,23 +134,26 @@ class _StatsFlState extends State<StatsFl> {
     // Exit early if we're disabled
     if (widget.isEnabled == false) return widget.child ?? SizedBox.shrink();
     // Exit early if there is no child
-    if (widget.child == null) return buildStats();
+    final content = widget.child == null
+        ? buildStats()
+        : Stack(
+            children: [
+              widget.child!,
+              Positioned.fill(
+                child: Align(
+                  alignment: widget.align ?? Alignment.topLeft,
+                  child: buildStats(),
+                ),
+              )
+            ],
+          );
+
     // Wrap stats + child in a stack
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Material(
         color: Colors.transparent,
-        child: Stack(
-          children: [
-            widget.child!,
-            Positioned.fill(
-              child: Align(
-                alignment: widget.align ?? Alignment.topLeft,
-                child: buildStats(),
-              ),
-            )
-          ],
-        ),
+        child: content,
       ),
     );
   }
